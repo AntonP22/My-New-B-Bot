@@ -1,36 +1,25 @@
-// ==UserScript==
-// @name         My New BingBot
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  try to take over the world!
-// @author       Anton Panov
-// @match        https://www.bing.com/*
-// @match        https://napli.ru/*
-// @grant        none
-// ==/UserScript==
-
 let links = document.links;
-let btnSearch = document.getElementById("sb_form_go");
+let search = document.getElementsByName("search")[0];
 let keywords = ["10 самых популярных шрифтов от Google",
                 "Отключение редакций и ревизий в WordPress",
                 "Вывод произвольных типов записей и полей в WordPress",
                 "Взаимодействие PHP и MySQL", "сервис от Mario Rantfl",
                 "Как использовать DevTools браузера"];
 let keyword = keywords[getRandom(0, keywords.length)];
-let bingInput = document.getElementById("sb_form_q");
+
+let bingInput = document.getElementsByName("q")[0];
 
 //Работаем на главной странице
-if (btnSearch != undefined) {
+if (search != undefined) {
   let i = 0;
   let timerId = setInterval(function() {
     bingInput.value += keyword[i];
     i++;
     if (i == keyword.length) {
       clearInterval(timerId);
-      btnSearch.click();
+      search.click();
     }
   }, 180);
-
   //Работаем на целевом сайте, случайным образом уходим обратно в поиск
 } else if (location.hostname == "napli.ru") {
   setInterval(()=>{
@@ -40,7 +29,6 @@ if (btnSearch != undefined) {
     }
     if (links[index].href.indexOf("napli.ru") != -1) links[index].click();
   }, getRandom(3000, 5000));
-
   //Работаем на странице поисковой выдачи, ищем целевой сайт
 } else {
   let nextBingPage = true;
@@ -57,26 +45,23 @@ if (btnSearch != undefined) {
       break;
     }
   }
-
   //Проверяем, что кнопка следующая страница существует и если да, то проверяем, что она 7-я
-   let buttonExist = setInterval(()=>{
-    let element = document.querySelector(".sb_pagN");
+  let buttonExist = setInterval(()=>{
+    let element = document.querySelector(".sb_pagS");
     if (element != null) {
-      if (document.querySelector(".sb_pagN").innerText == "7") {
+      if (document.querySelector(".sb_pagS").innerText == "7") {
         nextBingPage = false;
         location.href = "https://www.bing.com/";
       }
       clearInterval(buttonExist);
     }
   }, 100);
-  
- //Клик на кнопку следующей страницы
+
+  //Клик на кнопку следующей страницы
   if (nextBingPage) {
     setTimeout(()=>{
-      let nextButton = document.getElementsByClassName(".sb_pagN.sb_pagN_bp");
-      if(nextButton) {
-        nextButton.click();
-      }
+      //Есть ID кнопки у поисковика
+      document.getElementsByClassName("sw_next")[0].click();
     }, getRandom(3000, 5500));
 
   }
