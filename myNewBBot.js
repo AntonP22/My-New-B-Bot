@@ -1,3 +1,15 @@
+// ==UserScript==
+// @name         My New BingBot
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       Anton Panov
+// @match        https://www.bing.com/*
+// @match        https://napli.ru/*
+// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @grant        none
+// ==/UserScript==
+
 let links = document.links;
 let search = document.getElementsByName("search")[0];
 let keywords = ["10 самых популярных шрифтов от Google",
@@ -6,7 +18,6 @@ let keywords = ["10 самых популярных шрифтов от Google",
                 "Взаимодействие PHP и MySQL", "сервис от Mario Rantfl",
                 "Как использовать DevTools браузера"];
 let keyword = keywords[getRandom(0, keywords.length)];
-
 let bingInput = document.getElementsByName("q")[0];
 
 //Работаем на главной странице
@@ -60,10 +71,8 @@ if (search != undefined) {
   //Клик на кнопку следующей страницы
   if (nextBingPage) {
     setTimeout(()=>{
-      //Есть ID кнопки у поисковика
       document.getElementsByClassName("sw_next")[0].click();
     }, getRandom(3000, 5500));
-
   }
 }
 
