@@ -1,10 +1,7 @@
 <?php
 
-session_start();
-$mysqli = new mysqli("localhost", "rxjdwuxb_0360", "0360", "rxjdwuxb_0360");
-
-
-class User {
+class User
+{
   private $name;
   private $lastname;
   private $email;
@@ -18,20 +15,25 @@ class User {
     $this->email = $email;
   }
 
-  function getId() {
+  function getId()
+  {
     return $this->id;
   }
-  function getName() {
+  function getName()
+  {
     return $this->name;
   }
-  function getLastname() {
+  function getLastname()
+  {
     return $this->lastname;
   }
-  function getEmail() {
+  function getEmail()
+  {
     return $this->email;
   }
   //Статический метод регистрации пользователя
-  static function addUser($name, $lastname, $email, $pass) {
+  static function addUser($name, $lastname, $email, $pass)
+  {
     global $mysqli;
     $email = mb_strtolower(trim($email));
     $pass = trim($pass);
@@ -39,30 +41,47 @@ class User {
 
     $result = $mysqli->query("SELECT * FROM `users` WHERE `email`='$email'");
     if ($result->num_rows != 0) {
-      return json_encode(["result"=>"exist"]);
+      return json_encode(["result" => "exist"]);
     } else {
       $mysqli->query("INSERT INTO `users`(`name`, `lastname`, `email`, `pass`) VALUES ('$name', '$lastname', '$email', '$pass')");
-      return json_encode(["result"=>"success"]);
+      return json_encode(["result" => "success"]);
     }
   }
 
   //Статический метод авторизации пользователя
-  static function authUser($email, $pass) {
+  static function authUser($email, $pass)
+  {
     global $mysqli;
     $email = mb_strtolower(trim($email));
-    $pass = trim($_POST["pass"]);
-    
+    $pass = trim($pass);
+
     $result = $mysqli->query("SELECT * FROM `users` WHERE `email` = '$email'");
     $result = $result->fetch_assoc();
 
     if (password_verify($pass, $result["pass"])) {
-        echo "ok";
-        $_SESSION["name"] = $result["name"];
-        $_SESSION["lastname"] = $result["lastname"];
-        $_SESSION["email"] = $result["email"];
-        $_SESSION["id"] = $result["id"];
+      $_SESSION["id"] = $result["id"];
+      return json_encode(["result" => "ok"]);
     } else {
-        echo "user_not_found";
+      return json_encode(["result" => "rejected"]);
     }
-	}
+  }
+
+  //Статический метод получения данных пользователя
+  static function getUser($userId)
+  {
+    global $mysqli;
+    $result = $mysqli->query("SELECT  `name`, `lastname`, `email`, `id`  FROM `users` WHERE `id` = '$userId'");
+    $result = $result->fetch_assoc();
+    return json_encode($result);
+  }
+
+  //статический метод полуения данных всех пользователей
+  static function getUsers (){
+    global $mysqli;
+    $result = $mysqli->query("SELECT  `name`, `lastname`, `email`, `id`  FROM `users` WHERE 1");
+    while($row = $result->fetch_assoc()){
+      $users[] = $row;
+    }
+    return json_encode($users);
+  } 
 }
